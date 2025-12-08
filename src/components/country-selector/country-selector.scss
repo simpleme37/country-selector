@@ -1,0 +1,122 @@
+/* ================================
+ * 變數
+ * ================================ */
+$font-primary: 'Noto Sans TC', sans-serif;
+$font-weight-regular: 400;
+$text-large: 16px;
+$text-normal: 14px;
+$text-small: 13px;
+$color-red: #db0f00;
+$color-orange: #ff8000;
+$color-yellow: #fff9d6;
+$color-blue: #009ace;
+$color-light-green: #00aa00;
+$color-dark-green: #008e7f;
+$color-brown: #eae9dd;
+$color-gray-900: #2d2d2d;
+$color-gray-500: #8b8b8b;
+$color-gray-200: #dedede;
+$color-gray-100: #f1f1f1;
+$color-white: #ffffff;
+
+/* ================================
+ * CSS Reset 與字型
+ * ================================ */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    list-style: none;
+    text-decoration: none;
+}
+
+body {
+    color: $color-gray-900;
+    font-family: $font-primary;
+    font-size: $text-normal;
+    font-weight: $font-weight-regular;
+}
+
+/* ================================
+ * Country Selector 元件樣式
+ * ================================ */
+.country-selector {
+    position: relative;
+    width: 100%;
+
+    /* ========== Dropdown 按鈕 ========== */
+    &__trigger {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%; // TODO: 寬度設定
+        gap: 4px;
+        padding: 8px;
+    }
+
+    &__dropdown {
+        width: 100%;
+        margin-top: 4px;
+        padding: 8px;
+        background-color: $color-white;
+        border-radius: 4px;
+    }
+
+    &__search {
+        position: relative;
+        margin-bottom: 8px;
+    }
+
+    &__search-input {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid $color-gray-200;
+        border-radius: 4px;
+    }
+
+    .fa-magnifying-glass {
+        position: absolute;
+        right: 8px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: $color-gray-500;
+    }
+
+    /* ========== Dropdown 下拉選單 ========== */
+
+    /* ========== 提示文字 ========== */
+    &__hint {
+        font-size: $text-small;
+        padding: 4px 8px;
+    }
+
+    /* ========== 搜尋框 ========== */
+
+    /* ========== 國家列表 ========== */
+    &__list {
+        max-height: 200px;
+        overflow-y: auto;
+    }
+
+    &__list-title {
+        font-size: $text-small;
+        color: $color-gray-500;
+        padding: 4px 8px;
+    }
+
+    &__list-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 8px;
+        border-radius: 8px;
+
+        &--code {
+            color: $color-gray-500;
+        }
+
+        &:hover {
+            background-color: $color-gray-100;
+        }
+    }
+}
