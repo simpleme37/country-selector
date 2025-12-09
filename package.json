@@ -11,6 +11,8 @@
         "commit": "cz"
     },
     "dependencies": {
+        "@lion-libs/react-icons": "0.20.2-beta",
+        "@lion-libs/react-ui": "0.36.1-beta",
         "clsx": "^2.1.1",
         "react": "^19.2.0",
         "react-dom": "^19.2.0"

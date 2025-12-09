@@ -9,11 +9,8 @@
 export interface Country {
     zhName: string;
     enName: string;
-    /** 國家代碼 */
     shortName: string;
-    /** 首字母 */
     firstLetter: string;
-    /** 電話國碼 */
     code: string;
     id: number;
 }
@@ -58,8 +55,8 @@ export interface CountrySelectorProps {
     /** 非受控元件：預設選中的值（例如：'TW' 或 '886'） */
     defaultValue?: string;
 
-    /** 選擇變更時的回調 */
-    onChange?: (country: Country) => void;
+    /** 選擇變更時的回調（可能為 null 當清空選擇時） */
+    onChange?: (country: Country | null) => void;
 
     /** 自訂熱門列表 */
     hotList?: Country[];
@@ -70,10 +67,10 @@ export interface CountrySelectorProps {
     /** 搜尋輸入框的 placeholder */
     searchPlaceholder?: string;
 
-    /** 下拉選單上方的提示文字（可選） */
+    /** 下拉選單上方的提示文字 */
     hintText?: string;
 
-    /** 元件的 label 文字（用於 accessibility） */
+    /** 元件的 label 文字 */
     label?: string;
 
     /** 元件的 id（用於 label 綁定） */

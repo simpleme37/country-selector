@@ -1,8 +1,15 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import clsx from 'clsx';
+import countriesData from '../../data/countries.zhTW.full.json';
 import type { Country, CountrySelectorProps } from './types/country-selector';
 import type { CountriesData } from './types/country-selector';
-import countriesData from '../../data/countries.zhTW.full.json';
+import { sortCountries, groupCountriesByLetter, highlightMatch } from './utils/countryUtils';
+
+import {
+    MagnifyingGlassIcon,
+    InfoCircleIcon,
+    CrossCircleReverseIcon,
+} from '@lion-libs/react-icons';
 import './country-selector.scss';
 
 /**
@@ -13,10 +20,10 @@ export default function CountrySelector({
     type,
     value,
     defaultValue,
-    // onChange,  // TODO:
+    onChange,
     placeholder,
-    searchPlaceholder = '搜尋國家',
-    hintText = '非台灣號碼無法接收簡訊，我們將以e-mail與您聯繫',
+    searchPlaceholder = '',
+    hintText = '',
     label,
     disabled = false,
     className = '',
@@ -25,25 +32,77 @@ export default function CountrySelector({
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [searchInput, setSearchInput] = useState('');
     const [selected, setSelected] = useState<Country | null>(null);
+    const containerRef = useRef<HTMLDivElement>(null); // Ref 用於點擊外部關閉下拉選單
+    const selectedItemRef = useRef<HTMLLIElement>(null);
 
-    // Ref 用於點擊外部關閉下拉選單
-    const containerRef = useRef<HTMLDivElement>(null);
-
-    // === 載入國家資料 ===
-    const { hotList, allCountries } = useMemo(() => {
+    // 1. 基礎資料載入
+    const { hotList, normalList } = useMemo(() => {
         const data = countriesData as CountriesData;
         return {
             hotList: data.mobileCodeList.hotList,
-            allCountries: data.mobileCodeList.list,
+            normalList: data.mobileCodeList.list,
         };
     }, []);
 
-    // 合併所有國家（用於搜尋和 defaultValue 查找）
+    // 2. 合併列表（用於搜尋和 defaultValue 查找）
     const allCountriesCombined = useMemo(() => {
-        return [...hotList, ...allCountries];
-    }, [hotList, allCountries]);
+        return [...hotList, ...normalList];
+    }, [hotList, normalList]);
 
-    // === 初始化 defaultValue ===
+    // 3. 處理 normalList：過濾、排序、分組
+    const displayCountries = useMemo(() => {
+        // 有搜尋詞時：過濾並排序
+        const exactMatches: Country[] = [];
+        const partialMatches: Country[] = [];
+
+        if (searchInput.trim()) {
+            const searchLower = searchInput.toLowerCase();
+
+            normalList.forEach((country) => {
+                // 檢查完全匹配 (任一欄位)
+                const isExactMatch =
+                    country.code === searchInput ||
+                    country.zhName.toLowerCase() === searchLower ||
+                    country.enName.toLowerCase() === searchLower ||
+                    country.shortName.toLowerCase() === searchLower;
+
+                if (isExactMatch) {
+                    exactMatches.push(country);
+                }
+
+                // 檢查部分匹配 (任一欄位包含)
+                else if (
+                    country.code.includes(searchInput) ||
+                    country.zhName.toLowerCase().includes(searchLower) ||
+                    country.enName.toLowerCase().includes(searchLower) ||
+                    country.shortName.toLowerCase().includes(searchLower)
+                ) {
+                    partialMatches.push(country);
+                }
+            });
+
+            // 合併：完全匹配優先
+            const combined = [...sortCountries(exactMatches), ...sortCountries(partialMatches)];
+            return groupCountriesByLetter(combined);
+        }
+
+        // 無搜尋時：直接排序、分組
+        return groupCountriesByLetter(sortCountries(normalList));
+    }, [normalList, searchInput]);
+
+    // 4. 處理特定渲染邏輯
+    const renderConfig = useMemo(() => {
+        const hasSearch = searchInput.trim() !== '';
+        const hasResult = Object.keys(displayCountries).length > 0;
+
+        return {
+            showHotList: !hasSearch,
+            showGroupLetter: !hasSearch,
+            showNoResult: hasSearch && !hasResult,
+        };
+    }, [searchInput, displayCountries]);
+
+    // 非受控的情況：defaultValue → selected
     useEffect(() => {
         // 受控元件優先使用 value
         if (value !== undefined) {
@@ -63,8 +122,7 @@ export default function CountrySelector({
         }
     }, [defaultValue, allCountriesCombined, value]);
 
-    // === 受控 / 非受控模式處理 ===
-    // 受控元件：根據 value 找到對應的國家
+    // 受控的情況：value → selected
     useEffect(() => {
         if (value !== undefined && allCountriesCombined.length > 0) {
             const foundCountry = allCountriesCombined.find(
@@ -74,27 +132,105 @@ export default function CountrySelector({
         }
     }, [value, allCountriesCombined]);
 
+    // 當選單打開時，捲動至選中項目（置於可視範圍上方）
+    useEffect(() => {
+        if (isDropdownOpen && selectedItemRef.current) {
+            selectedItemRef.current.scrollIntoView({
+                behavior: 'auto',
+                block: 'start', // 將項目置於可視範圍頂部
+            });
+        }
+    }, [isDropdownOpen]);
+
     // === 計算 UI 文字 ===
-    // 顯示格式化的按鈕文字
-    const getDisplayText = (): string => {
-        // 優先順序：
-        // 1. 有選中的國家 → 顯示格式化的國家資訊
+    // 按鈕顯示文字（優先順序：selected > placeholder prop > 預設文字）
+    const displayText = useMemo(() => {
         if (selected) {
             return type === 'dialCode'
-                ? `+${selected.code}` // dialCode 模式：+886
-                : `${selected.zhName} (${selected.shortName})`; // nationality 模式：台灣 (TW)
+                ? `+${selected.code}`
+                : `${selected.zhName} ${selected.enName} (${selected.shortName})`;
         }
-
-        // 2. 沒選中但有 placeholder → 顯示自訂 placeholder
         if (placeholder) {
             return placeholder;
         }
-
-        // 3. 都沒有 → 顯示預設提示文字
         return type === 'dialCode' ? '請選擇國碼' : '請選擇國籍';
+    }, [selected, placeholder, type]);
+
+    // 提示文字（優先順序：hintText prop > 預設文字）
+    const computedHintText = useMemo(() => {
+        if (hintText) return hintText;
+        return type === 'dialCode' ? '非台灣號碼無法接收簡訊，我們將以e-mail與您聯繫' : '';
+    }, [hintText, type]);
+
+    // 搜尋框 placeholder（優先順序：searchPlaceholder prop > 預設文字）
+    const computedSearchPlaceholder = useMemo(() => {
+        return searchPlaceholder || (type === 'dialCode' ? '請輸入國家/國碼' : '請輸入國家');
+    }, [searchPlaceholder, type]);
+
+    // === 鍵盤與行為處理 ===
+    // 統一的選擇處理函數（包含 onChange 回調）
+    const handleSelectCountry = (country: Country | null) => {
+        setSelected(country);
+        onChange?.(country); // ← 通知父元件
     };
 
-    // TODO: 實作搜尋過濾邏輯
+    // 取得搜尋結果的第一筆資料
+    const getFirstCountry = (): Country | null => {
+        const letters = Object.keys(displayCountries).sort();
+        if (letters.length === 0) return null;
+        return displayCountries[letters[0]][0];
+    };
+
+    // Enter 鍵：選擇搜尋結果第一筆
+    const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            // 只在有搜尋詞且有結果時才選擇第一筆
+            if (searchInput.trim()) {
+                const firstCountry = getFirstCountry();
+                if (firstCountry) {
+                    handleSelectCountry(firstCountry);
+                    setIsDropdownOpen(false);
+                    setSearchInput('');
+                }
+            }
+        } else if (e.key === 'Escape') {
+            // ESC：清空搜尋，保持原本的 selected，關閉選單
+            setSearchInput('');
+            setIsDropdownOpen(false);
+        }
+    };
+
+    // Blur：選擇搜尋結果第一筆
+    const handleSearchBlur = () => {
+        // 延遲執行，避免與 onClick 衝突
+        setTimeout(() => {
+            // 只在有搜尋詞且有結果時才選擇第一筆
+            if (searchInput.trim()) {
+                const firstCountry = getFirstCountry();
+                if (firstCountry) {
+                    handleSelectCountry(firstCountry);
+                }
+            }
+        }, 200);
+    };
+
+    // 點擊外部關閉選單
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+                setIsDropdownOpen(false);
+                setSearchInput(''); // 清空搜尋但保留 selected
+            }
+        };
+
+        if (isDropdownOpen) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [isDropdownOpen]);
 
     return (
         <div
@@ -108,6 +244,7 @@ export default function CountrySelector({
             {label && (
                 <label htmlFor="selector" className="country-selector__label">
                     {label}
+                    <span>*</span>
                 </label>
             )}
 
@@ -123,7 +260,13 @@ export default function CountrySelector({
                 aria-label={label || (type === 'dialCode' ? '選擇國碼' : '選擇國籍')}
             >
                 {/* 按鈕文字 */}
-                <span className="country-selector__trigger-text">{getDisplayText()}</span>
+                <span
+                    className={clsx('country-selector__trigger-text', {
+                        'country-selector__trigger-text--placeholder': !selected,
+                    })}
+                >
+                    {displayText}
+                </span>
                 {/* 箭頭圖示 */}
                 <span
                     className={clsx('country-selector__trigger-arrow', {
@@ -137,9 +280,10 @@ export default function CountrySelector({
             {isDropdownOpen && (
                 <div className="country-selector__dropdown">
                     {/* 搜尋框上方提示文字 */}
-                    {hintText && (
+                    {computedHintText && (
                         <div className="country-selector__hint">
-                            <i className="fa-solid fa-info"></i> {hintText}
+                            <InfoCircleIcon />
+                            {computedHintText}
                         </div>
                     )}
 
@@ -150,74 +294,168 @@ export default function CountrySelector({
                             className="country-selector__search-input"
                             value={searchInput}
                             onChange={(e) => setSearchInput(e.target.value)}
-                            // TODO: 事件處理
-                            // onBlur={}
-                            // onKeyDown={}
-                            placeholder={searchPlaceholder}
+                            onKeyDown={handleSearchKeyDown}
+                            onBlur={handleSearchBlur}
+                            placeholder={computedSearchPlaceholder}
                             autoFocus
                         />
-                        <i className="fa-solid fa-magnifying-glass"></i>
+
+                        {/* 輸入框有值時，顯示清除 icon；沒有值時，顯示搜尋 icon */}
+                        {searchInput ? (
+                            <CrossCircleReverseIcon
+                                className="clear-icon"
+                                onClick={() => setSearchInput('')}
+                            ></CrossCircleReverseIcon>
+                        ) : (
+                            <MagnifyingGlassIcon className="search-icon"></MagnifyingGlassIcon>
+                        )}
                     </div>
 
-                    {/* 國家列表 */}
-                    <ul className="country-selector__list" role="listbox">
+                    {/* 國家選單 */}
+                    <ul
+                        className="country-selector__list"
+                        role="listbox"
+                        onKeyDown={(e) => {
+                            if (e.key === 'Escape') {
+                                setIsDropdownOpen(false);
+                                setSearchInput('');
+                            }
+                        }}
+                    >
                         {allCountriesCombined.length === 0 ? (
                             <li className="country-selector__list-item">載入中...</li>
+                        ) : renderConfig.showNoResult ? (
+                            <li className="country-selector__list-item country-selector__list-item--empty">
+                                很抱歉，找不到符合的項目!
+                            </li>
                         ) : (
                             <>
                                 {/* 熱門列表 */}
-                                <p className="country-selector__list-title">常用國家 / 地區</p>
-                                {hotList.map((country) => (
-                                    <li
-                                        key={country.id}
-                                        className={clsx(
-                                            'country-selector__list-item',
-                                            'country-selector__list-item--hot',
-                                            {
-                                                'country-selector__list-item--selected':
-                                                    selected?.id === country.id,
-                                            }
-                                        )}
-                                        onClick={() => {
-                                            setSelected(country);
-                                            setIsDropdownOpen(false);
-                                        }}
-                                    >
-                                        {type === 'dialCode' ? (
-                                            <>
-                                                <div>
-                                                    <span>{country.zhName}</span>
-                                                    <span>{`(${country.enName})`}</span>
-                                                </div>
-                                                <span className="country-selector__list-item--code">
-                                                    +{country.code}
-                                                </span>
-                                            </>
-                                        ) : (
-                                            `${country.zhName} (${country.shortName})`
-                                        )}
-                                    </li>
-                                ))}
+                                {renderConfig.showHotList && (
+                                    <>
+                                        <p className="country-selector__list-title">
+                                            常用國家 / 地區
+                                        </p>
+                                        {hotList.map((country) => (
+                                            <li
+                                                key={country.id}
+                                                className={clsx(
+                                                    'country-selector__list-item',
+                                                    'country-selector__list-item--hot',
+                                                    {
+                                                        'country-selector__list-item--selected':
+                                                            selected?.id === country.id,
+                                                    }
+                                                )}
+                                                onClick={() => {
+                                                    handleSelectCountry(country);
+                                                    setIsDropdownOpen(false);
+                                                }}
+                                            >
+                                                {type === 'dialCode' ? (
+                                                    // 電話國碼模式
+                                                    <>
+                                                        <div className="country-selector__list-item-content">
+                                                            {country.zhName}
+                                                            {country.enName} ({country.shortName})
+                                                        </div>
+                                                        <span className="country-selector__list-item-code">
+                                                            +{country.code}
+                                                        </span>
+                                                    </>
+                                                ) : (
+                                                    // 國籍模式
+                                                    <>
+                                                        <div className="country-selector__list-item-content">
+                                                            {country.zhName} {country.enName} (
+                                                            {country.shortName})
+                                                        </div>
+                                                    </>
+                                                )}
+                                            </li>
+                                        ))}
+                                    </>
+                                )}
 
                                 {/* 一般列表 */}
-                                <p className="country-selector__list-title">一般國家 / 地區</p>
-                                {allCountries.map((country) => (
-                                    <li
-                                        key={country.id}
-                                        className={clsx('country-selector__list-item', {
-                                            'country-selector__list-item--selected':
-                                                selected?.id === country.id,
-                                        })}
-                                        onClick={() => {
-                                            setSelected(country);
-                                            setIsDropdownOpen(false);
-                                        }}
-                                    >
-                                        {type === 'dialCode'
-                                            ? `+${country.code} ${country.zhName}`
-                                            : `${country.zhName} (${country.shortName})`}
-                                    </li>
-                                ))}
+                                {Object.entries(displayCountries)
+                                    .sort(([a], [b]) => a.localeCompare(b))
+                                    .map(([letter, countries]) => (
+                                        <div key={letter}>
+                                            {renderConfig.showGroupLetter && (
+                                                <p className="country-selector__list-letter">
+                                                    {letter}
+                                                </p>
+                                            )}
+                                            {countries.map((country) => (
+                                                <li
+                                                    key={country.id}
+                                                    ref={
+                                                        selected?.id === country.id
+                                                            ? selectedItemRef
+                                                            : null
+                                                    }
+                                                    className={clsx('country-selector__list-item', {
+                                                        'country-selector__list-item--selected':
+                                                            selected?.id === country.id,
+                                                    })}
+                                                    onClick={() => {
+                                                        handleSelectCountry(country);
+                                                        setIsDropdownOpen(false);
+                                                    }}
+                                                >
+                                                    {type === 'dialCode' ? (
+                                                        // 電話國碼模式
+                                                        <>
+                                                            <div className="country-selector__list-item-name">
+                                                                {highlightMatch(
+                                                                    country.zhName,
+                                                                    searchInput
+                                                                )}{' '}
+                                                                {highlightMatch(
+                                                                    country.enName,
+                                                                    searchInput
+                                                                )}{' '}
+                                                                (
+                                                                {highlightMatch(
+                                                                    country.shortName,
+                                                                    searchInput
+                                                                )}
+                                                                )
+                                                            </div>
+                                                            <span className="country-selector__list-item-code">
+                                                                +
+                                                                {highlightMatch(
+                                                                    country.code,
+                                                                    searchInput
+                                                                )}
+                                                            </span>
+                                                        </>
+                                                    ) : (
+                                                        // 國籍模式
+                                                        <>
+                                                            <span className="country-selector__list-item-content">
+                                                                {highlightMatch(
+                                                                    country.zhName,
+                                                                    searchInput
+                                                                )}{' '}
+                                                                {highlightMatch(
+                                                                    country.enName,
+                                                                    searchInput
+                                                                )}{' '}
+                                                                (
+                                                                {highlightMatch(
+                                                                    country.shortName,
+                                                                    searchInput
+                                                                )}
+                                                                )
+                                                            </span>
+                                                        </>
+                                                    )}
+                                                </li>
+                                            ))}
+                                        </div>
+                                    ))}
                             </>
                         )}
                     </ul>

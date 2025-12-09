@@ -44,14 +44,28 @@ body {
     position: relative;
     width: 100%;
 
-    /* ========== Dropdown 按鈕 ========== */
+    &__label {
+        display: flex;
+        gap: 2px;
+        span {
+            color: $color-red;
+        }
+        margin-bottom: 4px;
+    }
+
     &__trigger {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        width: 100%; // TODO: 寬度設定
+        width: 100%;
         gap: 4px;
         padding: 8px;
+    }
+
+    &__trigger-text {
+        &--placeholder {
+            color: $color-gray-500;
+        }
     }
 
     &__dropdown {
@@ -74,7 +88,8 @@ body {
         border-radius: 4px;
     }
 
-    .fa-magnifying-glass {
+    .search-icon,
+    .clear-icon {
         position: absolute;
         right: 8px;
         top: 50%;
@@ -82,19 +97,18 @@ body {
         color: $color-gray-500;
     }
 
-    /* ========== Dropdown 下拉選單 ========== */
-
     /* ========== 提示文字 ========== */
     &__hint {
-        font-size: $text-small;
+        display: flex;
+        align-items: center;
+        gap: 4px;
         padding: 4px 8px;
+        font-size: $text-small;
     }
-
-    /* ========== 搜尋框 ========== */
 
     /* ========== 國家列表 ========== */
     &__list {
-        max-height: 200px;
+        max-height: 240px;
         overflow-y: auto;
     }
 
@@ -102,6 +116,11 @@ body {
         font-size: $text-small;
         color: $color-gray-500;
         padding: 4px 8px;
+    }
+
+    &__list-letter {
+        color: $color-gray-500;
+        padding: 8px;
     }
 
     &__list-item {
@@ -115,8 +134,22 @@ body {
             color: $color-gray-500;
         }
 
+        &--empty {
+            color: $color-blue;
+        }
+
+        &--selected {
+            background-color: $color-gray-100;
+        }
+
         &:hover {
             background-color: $color-gray-100;
         }
+    }
+
+    /* ========== highlight 樣式 ========== */
+    mark {
+        background-color: transparent;
+        color: $color-red;
     }
 }
