@@ -34,6 +34,7 @@ export default function CountrySelector({
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [searchInput, setSearchInput] = useState('');
     const [selected, setSelected] = useState<Country | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
 
     // Refs
     const containerRef = useRef<HTMLDivElement>(null); // 用於偵測點擊外部
@@ -147,6 +148,24 @@ export default function CountrySelector({
             });
         }
     }, [isDropdownOpen]);
+
+    // 搜尋輸入時，使用 debounce 觸發 loading
+    useEffect(() => {
+        if (searchInput.trim()) {
+            // 開始 loading
+            setIsLoading(true);
+
+            // Debounce 500ms - 等待用戶停止輸入後才結束 loading
+            const timer = setTimeout(() => {
+                setIsLoading(false);
+            }, 500);
+
+            return () => clearTimeout(timer);
+        } else {
+            // 清空搜尋時，立刻停止 loading
+            setIsLoading(false);
+        }
+    }, [searchInput]);
 
     // ==========================================
     // UI 文字計算
@@ -324,7 +343,9 @@ export default function CountrySelector({
 
                     {/* 國家選單 */}
                     <ul
-                        className="country-selector__list"
+                        className={clsx('country-selector__list', {
+                            'country-selector--loading': isLoading,
+                        })}
                         role="listbox"
                         onKeyDown={(e) => {
                             if (e.key === 'Escape') {
@@ -333,8 +354,12 @@ export default function CountrySelector({
                             }
                         }}
                     >
-                        {allCountriesCombined.length === 0 ? (
-                            <li className="country-selector__list-item">載入中...</li>
+                        {/* Loading 時期顯示 */}
+                        {isLoading ? (
+                            <li className="country-selector__list-item country-selector__list-item--loading">
+                                <span className="country-selector__loading-spinner">⏳</span>
+                                Loading...
+                            </li>
                         ) : renderConfig.showNoResult ? (
                             <li className="country-selector__list-item country-selector__list-item--empty">
                                 很抱歉，找不到符合的項目!

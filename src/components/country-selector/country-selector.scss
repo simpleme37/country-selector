@@ -47,6 +47,7 @@ body {
     &__label {
         display: flex;
         gap: 2px;
+        color: $color-white;
         span {
             color: $color-red;
         }
@@ -110,6 +111,13 @@ body {
     &__list {
         max-height: 240px;
         overflow-y: auto;
+        transition: max-height 0.3s ease, height 0.3s ease;
+
+        // Loading 狀態：
+        &.country-selector--loading {
+            max-height: none;
+            height: auto;
+        }
     }
 
     &__list-title {
@@ -138,12 +146,34 @@ body {
             color: $color-blue;
         }
 
+        &--loading {
+            justify-content: center;
+            gap: 8px;
+            color: $color-gray-500;
+            font-size: $text-normal;
+        }
+
         &--selected {
             background-color: $color-gray-100;
         }
 
         &:hover {
             background-color: $color-gray-100;
+        }
+    }
+
+    &__loading-spinner {
+        font-size: 18px;
+        display: inline-block;
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+        100% {
+            transform: rotate(360deg);
         }
     }
 

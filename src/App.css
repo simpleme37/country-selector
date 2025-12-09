@@ -1,6 +1,8 @@
 #root {
-    max-width: 1280px;
-    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
     padding: 24px;
 }
 
@@ -13,8 +15,18 @@ h3 {
     display: flex;
     flex-direction: column;
     gap: 16px;
+    width: 100%;
+    max-width: 400px;
+}
+
+.demo-group {
+    background-color: #333;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
 .input-wrapper {
-    max-width: 400px;
+    width: 100%;
 }
