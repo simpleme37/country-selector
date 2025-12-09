@@ -28,14 +28,22 @@ export default function CountrySelector({
     disabled = false,
     className = '',
 }: CountrySelectorProps) {
-    // === State 定義 ===
+    // ==========================================
+    // State 管理
+    // ==========================================
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [searchInput, setSearchInput] = useState('');
     const [selected, setSelected] = useState<Country | null>(null);
-    const containerRef = useRef<HTMLDivElement>(null); // Ref 用於點擊外部關閉下拉選單
-    const selectedItemRef = useRef<HTMLLIElement>(null);
 
-    // 1. 基礎資料載入
+    // Refs
+    const containerRef = useRef<HTMLDivElement>(null); // 用於偵測點擊外部
+    const selectedItemRef = useRef<HTMLLIElement>(null); // 用於捲動至選中項目
+
+    // ==========================================
+    // 資料處理
+    // ==========================================
+
+    // 載入國家資料（熱門列表 + 完整列表）
     const { hotList, normalList } = useMemo(() => {
         const data = countriesData as CountriesData;
         return {
@@ -44,12 +52,12 @@ export default function CountrySelector({
         };
     }, []);
 
-    // 2. 合併列表（用於搜尋和 defaultValue 查找）
+    // 合併所有國家（用於 defaultValue/value 查找）
     const allCountriesCombined = useMemo(() => {
         return [...hotList, ...normalList];
     }, [hotList, normalList]);
 
-    // 3. 處理 normalList：過濾、排序、分組
+    // 過濾、排序、分組處理（用於渲染）
     const displayCountries = useMemo(() => {
         // 有搜尋詞時：過濾並排序
         const exactMatches: Country[] = [];
@@ -90,39 +98,37 @@ export default function CountrySelector({
         return groupCountriesByLetter(sortCountries(normalList));
     }, [normalList, searchInput]);
 
-    // 4. 處理特定渲染邏輯
+    // 渲染配置（控制 UI 顯示邏輯）
     const renderConfig = useMemo(() => {
         const hasSearch = searchInput.trim() !== '';
         const hasResult = Object.keys(displayCountries).length > 0;
 
         return {
-            showHotList: !hasSearch,
-            showGroupLetter: !hasSearch,
-            showNoResult: hasSearch && !hasResult,
+            showHotList: !hasSearch, // 有搜尋時隱藏熱門列表
+            showGroupLetter: !hasSearch, // 有搜尋時隱藏字母分組標題
+            showNoResult: hasSearch && !hasResult, // 顯示「無結果」提示
         };
     }, [searchInput, displayCountries]);
 
-    // 非受控的情況：defaultValue → selected
-    useEffect(() => {
-        // 受控元件優先使用 value
-        if (value !== undefined) {
-            return;
-        }
+    // ==========================================
+    // 受控/非受控模式處理
+    // ==========================================
 
-        // 非受控元件使用 defaultValue
+    // 非受控模式：初始化 defaultValue
+    useEffect(() => {
+        if (value !== undefined) return; // 受控模式優先
+
         if (defaultValue && allCountriesCombined.length > 0) {
-            // 可能是國碼（如 '886'）或國家代碼（如 'TW'）
             const foundCountry = allCountriesCombined.find(
                 (c) => c.code === defaultValue || c.shortName === defaultValue
             );
-
             if (foundCountry) {
                 setSelected(foundCountry);
             }
         }
     }, [defaultValue, allCountriesCombined, value]);
 
-    // 受控的情況：value → selected
+    // 受控模式：同步 value 到 selected
     useEffect(() => {
         if (value !== undefined && allCountriesCombined.length > 0) {
             const foundCountry = allCountriesCombined.find(
@@ -142,8 +148,11 @@ export default function CountrySelector({
         }
     }, [isDropdownOpen]);
 
-    // === 計算 UI 文字 ===
-    // 按鈕顯示文字（優先順序：selected > placeholder prop > 預設文字）
+    // ==========================================
+    // UI 文字計算
+    // ==========================================
+
+    // 按鈕顯示文字（優先順序：selected > placeholder > 預設）
     const displayText = useMemo(() => {
         if (selected) {
             return type === 'dialCode'
@@ -156,35 +165,38 @@ export default function CountrySelector({
         return type === 'dialCode' ? '請選擇國碼' : '請選擇國籍';
     }, [selected, placeholder, type]);
 
-    // 提示文字（優先順序：hintText prop > 預設文字）
+    // 提示文字（優先順序：hintText > 預設）
     const computedHintText = useMemo(() => {
         if (hintText) return hintText;
         return type === 'dialCode' ? '非台灣號碼無法接收簡訊，我們將以e-mail與您聯繫' : '';
     }, [hintText, type]);
 
-    // 搜尋框 placeholder（優先順序：searchPlaceholder prop > 預設文字）
+    // 搜尋框 placeholder（優先順序：searchPlaceholder > 預設）
     const computedSearchPlaceholder = useMemo(() => {
         return searchPlaceholder || (type === 'dialCode' ? '請輸入國家/國碼' : '請輸入國家');
     }, [searchPlaceholder, type]);
 
-    // === 鍵盤與行為處理 ===
-    // 統一的選擇處理函數（包含 onChange 回調）
+    // ==========================================
+    // 事件處理
+    // ==========================================
+
+    // 統一的選擇處理（觸發 onChange 回調）
     const handleSelectCountry = (country: Country | null) => {
         setSelected(country);
-        onChange?.(country); // ← 通知父元件
+        onChange?.(country);
     };
 
-    // 取得搜尋結果的第一筆資料
+    // 取得當前搜尋結果的第一筆
     const getFirstCountry = (): Country | null => {
         const letters = Object.keys(displayCountries).sort();
         if (letters.length === 0) return null;
         return displayCountries[letters[0]][0];
     };
 
-    // Enter 鍵：選擇搜尋結果第一筆
+    // 鍵盤事件處理
     const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter') {
-            // 只在有搜尋詞且有結果時才選擇第一筆
+            // Enter：選擇第一筆結果
             if (searchInput.trim()) {
                 const firstCountry = getFirstCountry();
                 if (firstCountry) {
@@ -194,17 +206,16 @@ export default function CountrySelector({
                 }
             }
         } else if (e.key === 'Escape') {
-            // ESC：清空搜尋，保持原本的 selected，關閉選單
+            // Escape：取消搜尋並關閉選單
             setSearchInput('');
             setIsDropdownOpen(false);
         }
     };
 
-    // Blur：選擇搜尋結果第一筆
+    // 失焦事件處理
     const handleSearchBlur = () => {
-        // 延遲執行，避免與 onClick 衝突
         setTimeout(() => {
-            // 只在有搜尋詞且有結果時才選擇第一筆
+            // Blur：選擇第一筆結果（延遲避免與 onClick 衝突）
             if (searchInput.trim()) {
                 const firstCountry = getFirstCountry();
                 if (firstCountry) {

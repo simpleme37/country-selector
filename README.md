@@ -1,75 +1,275 @@
-# React + TypeScript + Vite
+# CountrySelector 國家選擇器元件
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+一個功能完整的 React + TypeScript 國家選擇器元件，支援電話國碼與國籍兩種模式。
 
-Currently, two official plugins are available:
+## 功能
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- 雙模式支援：電話國碼 (`dialCode`) 與國籍 (`nationality`) 模式
+- 智慧搜尋：支援多欄位搜尋（國碼、中文名、英文名、縮寫），完全匹配優先
+- 搜尋高亮：自動 highlight 匹配的關鍵字
+- 字母分組：按 A-Z 字母分組顯示
+- 鍵盤互動：支援 Enter、Escape 鍵操作
+- 自動定位：開啟選單時自動捲動至已選項目
+- 受控/非受控：支援兩種模式
 
-## React Compiler
+---
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+## 安裝
 
-Note: This will impact Vite dev & build performances.
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+pnpm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 使用說明
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### 基礎用法
+
+```tsx
+import CountrySelector from './components/country-selector/country-selector';
+
+function App() {
+    return <CountrySelector type="dialCode" label="電話國碼" placeholder="請選擇國碼" />;
+}
 ```
+
+### 受控模式
+
+```tsx
+function App() {
+    const [selectedCode, setSelectedCode] = useState('886');
+
+    return (
+        <CountrySelector
+            type="dialCode"
+            value={selectedCode}
+            onChange={(country) => {
+                setSelectedCode(country?.code || '');
+                console.log('選擇了：', country?.zhName);
+            }}
+        />
+    );
+}
+```
+
+### 非受控模式
+
+```tsx
+function App() {
+    return (
+        <CountrySelector
+            type="nationality"
+            defaultValue="TW"
+            onChange={(country) => console.log(country)}
+        />
+    );
+}
+```
+
+---
+
+## Props API
+
+### type
+
+- **類型**: `'dialCode' | 'nationality'`
+- **必填**: 是
+- **說明**: 選擇器模式
+
+### value
+
+- **類型**: `string`
+- **必填**: 否
+- **說明**: 受控模式，當前選中的值
+
+### defaultValue
+
+- **類型**: `string`
+- **必填**: 否
+- **說明**: 非受控模式，預設選中的值
+
+### onChange
+
+- **類型**: `(country: Country | null) => void`
+- **必填**: 否
+- **說明**: 選擇變更時的回調函數
+
+### placeholder
+
+- **類型**: `string`
+- **必填**: 否
+- **說明**: 按鈕 placeholder（未選中時顯示）
+
+### searchPlaceholder
+
+- **類型**: `string`
+- **必填**: 否
+- **預設值**: 依 type 自動設定
+- **說明**: 搜尋框 placeholder
+
+### hintText
+
+- **類型**: `string`
+- **必填**: 否
+- **預設值**: dialCode 模式有預設提示
+- **說明**: 下拉選單上方的提示文字
+
+### label
+
+- **類型**: `string`
+- **必填**: 否
+- **說明**: 表單標籤
+
+### disabled
+
+- **類型**: `boolean`
+- **必填**: 否
+- **預設值**: `false`
+- **說明**: 是否禁用元件
+
+### className
+
+- **類型**: `string`
+- **必填**: 否
+- **預設值**: `''`
+- **說明**: 自訂 CSS class
+
+---
+
+## 功能說明
+
+### 1. 搜尋與過濾
+
+支援多欄位搜尋，並依匹配程度排序：
+
+- **完全匹配**優先（任一欄位完全相同）
+- **部分匹配**次之（任一欄位包含搜尋詞）
+- 支援欄位：`code`、`zhName`、`enName`、`shortName`
+
+```tsx
+// 搜尋「日」會匹配：
+// - 日本 (完全匹配 zhName)
+// - 尼日 (部分匹配 zhName)
+```
+
+### 2. 鍵盤互動
+
+| 按鍵     | 行為                             |
+| -------- | -------------------------------- |
+| `Enter`  | 選擇搜尋結果第一筆並關閉選單     |
+| `Escape` | 清空搜尋並關閉選單（保持原選項） |
+| `Blur`   | 選擇搜尋結果第一筆               |
+| 點擊外部 | 關閉選單（保持原選項）           |
+
+### 3. 字母分組
+
+無搜尋時，國家列表按 `shortName` 首字母 A-Z 分組顯示，每組有字母標題。
+
+### 4. 自動定位
+
+開啟選單時，自動捲動至已選中的項目（置於可視範圍頂部）。
+
+---
+
+## 專案結構
+
+```
+src/components/country-selector/
+├── country-selector.tsx        # 主元件
+├── country-selector.scss       # 樣式（BEM 命名）
+├── types/
+│   └── country-selector.ts     # TypeScript 型別定義
+└── utils/
+    └── countryUtils.tsx        # 工具函數（排序、分組、highlight）
+```
+
+---
+
+## 開發指令
+
+```bash
+# 啟動開發伺服器
+pnpm dev
+
+# 建構生產版本
+pnpm build
+
+# 預覽建構結果
+pnpm preview
+
+# Lint 檢查
+pnpm lint
+```
+
+---
+
+## 型別定義
+
+### Country
+
+```typescript
+interface Country {
+    zhName: string; // 中文名稱
+    enName: string; // 英文名稱
+    shortName: string; // 國家代碼 (如 TW)
+    firstLetter: string; // 首字母
+    code: string; // 電話國碼 (如 886)
+    id: number; // 唯一識別碼
+}
+```
+
+### CountrySelectorProps
+
+```typescript
+interface CountrySelectorProps {
+    type: 'dialCode' | 'nationality';
+    value?: string;
+    defaultValue?: string;
+    onChange?: (country: Country | null) => void;
+    placeholder?: string;
+    searchPlaceholder?: string;
+    hintText?: string;
+    label?: string;
+    disabled?: boolean;
+    className?: string;
+}
+```
+
+---
+
+## 使用場景
+
+### 電話國碼選擇 (`dialCode`)
+
+```tsx
+<CountrySelector
+    type="dialCode"
+    label="電話國碼"
+    defaultValue="886"
+    onChange={(country) => {
+        if (country) {
+            console.log(`選擇了 +${country.code}`);
+        }
+    }}
+/>
+```
+
+顯示格式：`+886 台灣`
+
+### 國籍選擇 (`nationality`)
+
+```tsx
+<CountrySelector
+    type="nationality"
+    label="國籍"
+    defaultValue="TW"
+    onChange={(country) => {
+        if (country) {
+            console.log(`選擇了 ${country.zhName}`);
+        }
+    }}
+/>
+```
+
+顯示格式：`台灣 Taiwan (TW)`
