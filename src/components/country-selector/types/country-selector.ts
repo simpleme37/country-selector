@@ -58,23 +58,23 @@ export interface CountrySelectorProps {
     /** 選擇變更時的回調（可能為 null 當清空選擇時） */
     onChange?: (country: Country | null) => void;
 
-    /** 自訂熱門列表 */
-    hotList?: Country[];
-
-    /** dropdown 按鈕的 placeholder（沒有選中值時顯示） */
+    /** trigger 的 placeholder（沒有值時顯示） */
     placeholder?: string;
 
     /** 搜尋輸入框的 placeholder */
     searchPlaceholder?: string;
 
-    /** 下拉選單上方的提示文字 */
-    hintText?: string;
+    /** 下拉選單內的提示文字 */
+    dropdownHint?: string;
 
     /** 元件的 label 文字 */
     label?: string;
 
-    /** 元件的 id（用於 label 綁定） */
-    id?: string;
+    /** 表單欄位名稱（用於表單提交） */
+    name?: string;
+
+    /** 是否為必填欄位（會在 label 顯示紅色星號） */
+    required?: boolean;
 
     /** 自訂 CSS class */
     className?: string;
