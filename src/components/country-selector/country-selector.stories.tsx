@@ -40,16 +40,14 @@ export const WithPhoneNumber: Story = {
     render: (args) => (
         <div className="input-wrapper">
             <CountrySelector {...args} defaultValue="501" />
-            <div className="phone-input">
-                <input
-                    type="tel"
-                    id="phone-number"
-                    name="phoneNumber"
-                    placeholder="請輸入號碼"
-                    className="phone-number"
-                    required
-                />
-            </div>
+            <input
+                type="tel"
+                id="phone-number"
+                name="phoneNumber"
+                placeholder="請輸入號碼"
+                className="phone-number"
+                required
+            />
         </div>
     ),
 };
