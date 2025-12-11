@@ -100,8 +100,6 @@ body {
     &__dropdown {
         position: absolute;
         z-index: 1;
-        min-width: max(100%, 280px); // 桌面版最少 280px，手機版跟 trigger 一樣寬
-        max-width: min(368px, 100vw - 32px); // 桌面版最多 368px，手機版留 16px padding
         padding: 8px;
         background-color: $color-white;
         border-radius: 4px;

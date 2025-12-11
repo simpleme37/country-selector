@@ -279,3 +279,22 @@ interface CountrySelectorProps {
 ```
 
 顯示格式：`台灣 Taiwan (TW)`
+
+### 與其他表單元素並排
+
+當 CountrySelector 與其他 input 並排使用時，可以透過 CSS 調整 dropdown 寬度：
+
+```tsx
+<div className="phone-input-group">
+    <CountrySelector type="dialCode" />
+    <input type="tel" placeholder="請輸入號碼" />
+</div>
+```
+
+```css
+/* 讓 dropdown 寬度對齊整個外層容器 */
+.phone-input-group .country-selector__dropdown {
+    width: calc((100% + 8px) * 4 - 8px); /* 根據 flex 比例調整 */
+    max-width: none;
+}
+```
