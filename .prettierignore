@@ -1,0 +1,16 @@
+# 依賴套件
+node_modules
+
+# 建置輸出
+dist
+build
+storybook-static
+
+# Lock 檔案 (自動生成，不應手動編輯)
+# pnpm-lock.yaml
+package-lock.json
+yarn.lock
+
+# 快取檔案
+.cache
+*.tsbuildinfo
