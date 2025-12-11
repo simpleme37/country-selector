@@ -250,7 +250,9 @@ export default function CountrySelector({
             <button
                 id="selector"
                 type="button"
-                className="country-selector__trigger"
+                className={clsx('country-selector__trigger', {
+                    'country-selector__trigger--open': isDropdownOpen,
+                })}
                 onClick={() => !disabled && setIsDropdownOpen(!isDropdownOpen)}
                 aria-haspopup="listbox"
                 aria-expanded={isDropdownOpen}

@@ -39,7 +39,7 @@ h3 {
     flex: 1;
 }
 
-/* 自訂選單寬度 */
+/* 選單寬度 */
 .input-wrapper .country-selector__dropdown {
     min-width: 368px;
 }
@@ -58,11 +58,8 @@ h3 {
     border: solid 1px #dedede;
 }
 
-.phone-number:hover {
-    outline: none;
-    border-color: #666666;
-}
-
+.phone-number:hover,
 .phone-number:focus {
     outline: none;
+    border-color: #666666;
 }

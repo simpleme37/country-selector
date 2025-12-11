@@ -75,6 +75,10 @@ body {
         &:hover:not(:disabled) {
             border-color: $color-gray-500;
         }
+
+        &--open {
+            border-color: $color-gray-500;
+        }
     }
 
     &__trigger-text {

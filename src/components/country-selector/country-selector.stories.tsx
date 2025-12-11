@@ -33,7 +33,7 @@ export const Nationality: Story = {
 export const WithPhoneNumber: Story = {
     args: {
         type: 'dialCode',
-        label: '電話國碼',
+        label: '',
         name: 'countryCode',
         required: true,
     },

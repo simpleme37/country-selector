@@ -192,14 +192,20 @@ src/components/country-selector/
 # 啟動開發伺服器
 pnpm dev
 
+# 啟動 storybook
+pnpm storybook
+
+# 啟動開發伺服器與 storybook
+pnpm dev:all
+
+# Lint 檢查
+pnpm lint
+
 # 建構生產版本
 pnpm build
 
 # 預覽建構結果
 pnpm preview
-
-# Lint 檢查
-pnpm lint
 ```
 
 ---
