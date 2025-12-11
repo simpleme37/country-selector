@@ -18,7 +18,7 @@ function groupCountriesByLetter(countries: Country[]) {
     const groups: Record<string, Country[]> = {};
 
     countries.forEach((country) => {
-        const letter = country.shortName[0].toUpperCase(); // 例如 A, B, C
+        const letter = country.firstLetter.toUpperCase(); // 使用資料中的 firstLetter
 
         if (!groups[letter]) {
             groups[letter] = [];

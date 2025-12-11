@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import clsx from 'clsx';
 import countriesData from '../../data/countries.zhTW.full.json';
 import CountryListItem from './CountryListItem';
@@ -158,26 +158,28 @@ export default function CountrySelector({
     // 事件處理
     // ==========================================
 
-    // 統一的選擇處理（觸發 onChange 回調）
-    const handleSelectCountry = (country: Country | null) => {
-        if (country) {
-            if (!isControlled) {
-                setInternalValue(type === 'dialCode' ? country.code : country.shortName);
-            }
-            onChange?.(country);
-        }
-        setIsDropdownOpen(false);
-        setSearchInput('');
-    };
-
     // 取得當前搜尋結果的第一筆
-    const getFirstCountry = (): Country | null => {
+    const getFirstCountry = useCallback((): Country | null => {
         const letters = Object.keys(displayCountries).sort();
         if (letters.length === 0) return null;
         return displayCountries[letters[0]][0];
-    };
+    }, [displayCountries]);
 
-    // 鍵盤事件處理
+    // 統一的選擇處理（觸發 onChange 回調）
+    const handleSelectCountry = useCallback(
+        (country: Country | null) => {
+            if (country) {
+                if (!isControlled) {
+                    setInternalValue(type === 'dialCode' ? country.code : country.shortName);
+                }
+                onChange?.(country);
+            }
+            setIsDropdownOpen(false);
+            setSearchInput('');
+        },
+        [isControlled, type, onChange]
+    );
+
     const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter') {
             // Enter：選擇第一筆結果
@@ -196,7 +198,6 @@ export default function CountrySelector({
         }
     };
 
-    // 失焦事件處理
     const handleSearchBlur = () => {
         setTimeout(() => {
             // Blur：選擇第一筆結果（延遲避免與 onClick 衝突）
@@ -213,8 +214,15 @@ export default function CountrySelector({
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+                // 如果有搜尋內容，選擇第一筆結果
+                if (searchInput.trim()) {
+                    const firstCountry = getFirstCountry();
+                    if (firstCountry) {
+                        handleSelectCountry(firstCountry);
+                    }
+                }
                 setIsDropdownOpen(false);
-                setSearchInput(''); // 清空搜尋但保留 selected
+                setSearchInput(''); // 清空搜尋
             }
         };
 
@@ -225,7 +233,7 @@ export default function CountrySelector({
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
-    }, [isDropdownOpen]);
+    }, [isDropdownOpen, searchInput, getFirstCountry, handleSelectCountry]);
 
     return (
         <div
@@ -235,7 +243,7 @@ export default function CountrySelector({
                 'country-selector--disabled': disabled,
             })}
         >
-            {/* Label（可選） */}
+            {/* 標籤*/}
             {label && (
                 <label htmlFor="selector" className="country-selector__label">
                     {label}
