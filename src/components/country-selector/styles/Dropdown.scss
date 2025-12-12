@@ -144,6 +144,48 @@
         color: $color-gray-500;
         cursor: default;
     }
+
+    /* Skeleton 狀態 */
+    &--skeleton {
+        pointer-events: none;
+        cursor: default;
+    }
+}
+
+/* Skeleton 動畫 */
+.skeleton {
+    background: linear-gradient(
+        90deg,
+        $color-gray-100 25%,
+        $color-gray-200 50%,
+        $color-gray-100 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 4px;
+}
+
+.skeleton-text {
+    height: 16px;
+    flex: 1;
+
+    /* 長短交替變化 */
+    &--long {
+        max-width: 100%;
+    }
+
+    &--short {
+        max-width: 80%;
+    }
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
 }
 
 /* 項目內容 (名稱) */

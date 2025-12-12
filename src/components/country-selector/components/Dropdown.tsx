@@ -142,12 +142,30 @@ export function Dropdown({ className, hint, searchPlaceholder }: DropdownProps) 
                     role="listbox"
                     style={{ maxHeight: `${dropdownMaxHeight - 100}px` }}
                 >
-                    {/* Loading 狀態 */}
+                    {/* Loading 狀態 - 顯示 skeleton */}
                     {isLoading ? (
-                        <li className="country-selector__list-item country-selector__list-item--loading">
-                            <span className="country-selector__loading-spinner">⏳</span>
-                            Loading...
-                        </li>
+                        <>
+                            {/* 計算 skeleton 數量：根據當前搜尋結果數量，最多 10 個 */}
+                            {Array.from({
+                                length: Math.min(
+                                    10,
+                                    Math.max(1, Object.values(filteredCountries).flat().length || 5)
+                                ),
+                            }).map((_, index) => {
+                                // 長短交替：偶數索引為長，奇數索引為短
+                                const widthVariant = index % 2 === 0 ? 'long' : 'short';
+                                return (
+                                    <li
+                                        key={index}
+                                        className="country-selector__list-item country-selector__list-item--skeleton"
+                                    >
+                                        <div
+                                            className={`skeleton skeleton-text skeleton-text--${widthVariant}`}
+                                        ></div>
+                                    </li>
+                                );
+                            })}
+                        </>
                     ) : renderConfig.showNoResult ? (
                         <li className="country-selector__list-item country-selector__list-item--empty">
                             很抱歉，找不到符合的項目!
