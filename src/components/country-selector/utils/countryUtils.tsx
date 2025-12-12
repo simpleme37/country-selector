@@ -30,6 +30,15 @@ function groupCountriesByLetter(countries: Country[]) {
 }
 
 /**
+ * 轉義正則表達式特殊字符
+ * @param string - 需要轉義的字符串
+ * @returns 轉義後的字符串
+ */
+function escapeRegExp(string: string): string {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+/**
  * 處理出關鍵字
  * @param text - 原始文字
  * @param searchTerm - 搜尋關鍵字
@@ -41,12 +50,14 @@ function highlightMatch(text: string, searchTerm: string): React.ReactNode {
         return text;
     }
 
-    const regex = new RegExp(`(${searchTerm})`, 'gi');
+    // 轉義特殊字符，避免正則錯誤
+    const escapedTerm = escapeRegExp(searchTerm);
+    const regex = new RegExp(`(${escapedTerm})`, 'gi');
     const parts = text.split(regex);
 
     return parts.map((part, index) => {
         // 每次都建立新的 regex 來測試，避免狀態問題
-        const testRegex = new RegExp(searchTerm, 'gi');
+        const testRegex = new RegExp(escapeRegExp(searchTerm), 'gi');
         const isMatch = testRegex.test(part);
 
         return isMatch ? (
@@ -62,11 +73,13 @@ function highlightMatch(text: string, searchTerm: string): React.ReactNode {
 /**
  * 篩選國家列表
  * @param countries - 國家列表
+ * @param type - 模式（'dialCode' 或 'nationality'）
  * @param searchInput - 搜尋關鍵字
  * @returns 篩選後的國家列表
  */
 function filterAndGroupCountries(
     countries: Country[],
+    type: string,
     searchInput: string
 ): Record<string, Country[]> {
     // 有搜尋詞時：過濾並排序
@@ -79,7 +92,7 @@ function filterAndGroupCountries(
         countries.forEach((country) => {
             // 檢查完全匹配 (任一欄位)
             const isExactMatch =
-                country.code === searchInput ||
+                (type === 'dialCode' && country.code === searchInput) ||
                 country.zhName.toLowerCase() === searchLower ||
                 country.enName.toLowerCase() === searchLower ||
                 country.shortName.toLowerCase() === searchLower;
@@ -90,7 +103,7 @@ function filterAndGroupCountries(
 
             // 檢查部分匹配 (任一欄位包含)
             else if (
-                country.code.includes(searchInput) ||
+                (type === 'dialCode' && country.code.includes(searchInput)) ||
                 country.zhName.toLowerCase().includes(searchLower) ||
                 country.enName.toLowerCase().includes(searchLower) ||
                 country.shortName.toLowerCase().includes(searchLower)
@@ -99,9 +112,11 @@ function filterAndGroupCountries(
             }
         });
 
-        // 合併：完全匹配優先
+        // 合併：完全匹配優先，內部按 shortName 排序
         const combined = [...sortCountries(exactMatches), ...sortCountries(partialMatches)];
-        return groupCountriesByLetter(combined);
+
+        // 搜尋時不分組，保持優先順序（用空字串作為唯一的分組 key）
+        return { '': combined };
     }
 
     // 無搜尋時：直接排序、分組

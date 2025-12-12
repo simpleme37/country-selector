@@ -100,19 +100,12 @@
     }
 }
 
-/* 列表標題（常用國家） */
-.country-selector__list-title {
-    font-size: $text-small;
-    color: $color-gray-500;
-    padding: $spacing-xs $spacing-sm;
-    margin-bottom: $spacing-xs;
-}
-
-/* 字母分組標題 */
+/* 列表、字母小標題 */
+.country-selector__list-title,
 .country-selector__list-letter {
     font-size: $text-small;
     color: $color-gray-500;
-    padding: $spacing-sm;
+    padding: $spacing-xs $spacing-sm;
 }
 
 /* ========== 列表項目 ========== */
@@ -153,13 +146,13 @@
     }
 }
 
-/* 項目內容 */
-.country-selector__list-item-content {
+/* 項目內容 (名稱) */
+.country-selector__list-item-name {
     flex: 1;
     min-width: 0; // 允許 flex 壓縮
 }
 
-/* 國碼 */
+/* 項目內容 (國碼) */
 .country-selector__list-item-code {
     color: $color-gray-500;
     flex-shrink: 0;

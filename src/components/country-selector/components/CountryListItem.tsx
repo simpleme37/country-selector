@@ -44,7 +44,7 @@ export default function CountryListItem({
                 </>
             ) : (
                 // 國籍模式
-                <span className="country-selector__list-item-content">
+                <span className="country-selector__list-item-name">
                     {highlightMatch(country.zhName, searchInput)}{' '}
                     {highlightMatch(country.enName, searchInput)} (
                     {highlightMatch(country.shortName, searchInput)})

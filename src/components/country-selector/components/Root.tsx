@@ -86,14 +86,15 @@ export function Root({
 
     // 過濾後的國家列表
     const displayCountries = useMemo(
-        () => filterAndGroupCountries(normalList, searchInput),
-        [normalList, searchInput]
+        () => filterAndGroupCountries(normalList, type, searchInput),
+        [normalList, type, searchInput]
     );
 
     // 渲染配置
     const renderConfig = useMemo(() => {
         const hasSearch = searchInput.trim() !== '';
-        const hasResult = Object.keys(displayCountries).length > 0;
+        // 檢查是否有任何分組包含國家資料
+        const hasResult = Object.values(displayCountries).some((arr) => arr.length > 0);
 
         return {
             showHotList: !hasSearch,

@@ -33,7 +33,7 @@ export const CountrySelector = {
 // 預設導出
 export default CountrySelector;
 
-// 也可以個別導出
+// 個別導出
 export { Root, Trigger, Dropdown };
 
 // 導出型別

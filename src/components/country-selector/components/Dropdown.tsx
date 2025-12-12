@@ -124,7 +124,10 @@ export function Dropdown({ className, hint, searchPlaceholder }: DropdownProps) 
                     {searchInput ? (
                         <CrossCircleReverseIcon
                             className="clear-icon"
-                            onClick={() => setSearchInput('')}
+                            onMouseDown={(e) => e.preventDefault()}
+                            onClick={() => {
+                                setSearchInput('');
+                            }}
                         />
                     ) : (
                         <MagnifyingGlassIcon className="search-icon" />
