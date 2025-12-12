@@ -1,6 +1,6 @@
 import clsx from 'clsx';
-import type { Country, CountrySelectorType } from './types/country-selector';
-import { highlightMatch } from './utils/countryUtils';
+import type { Country, CountrySelectorType } from '../types/country-selector';
+import { highlightMatch } from '../utils/countryUtils';
 
 interface CountryListItemProps {
     country: Country;

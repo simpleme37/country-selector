@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import clsx from 'clsx';
 import countriesData from '../../data/countries.zhTW.full.json';
-import CountryListItem from './CountryListItem';
+import CountryListItem from './components/CountryListItem';
 import type { Country, CountrySelectorProps } from './types/country-selector';
 import type { CountriesData } from './types/country-selector';
 import { useDropdownPosition } from './hook/useDropdownPosition';

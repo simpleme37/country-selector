@@ -91,6 +91,7 @@
     overflow-y: auto;
     flex: 1;
     min-height: 0;
+    padding-right: $spacing-sm;
     @include custom-scrollbar;
 
     /* Loading 狀態 */
@@ -102,7 +103,6 @@
 /* 列表標題（常用國家） */
 .country-selector__list-title {
     font-size: $text-small;
-    font-weight: bold;
     color: $color-gray-500;
     padding: $spacing-xs $spacing-sm;
     margin-bottom: $spacing-xs;
@@ -185,5 +185,4 @@
 mark {
     background-color: transparent;
     color: $color-red;
-    font-weight: bold;
 }

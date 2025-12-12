@@ -1,53 +1,56 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import CountrySelector from './country-selector';
-import '../../App.css';
+import { useState } from 'react';
+import CountrySelector from './index';
 
 const meta = {
     title: 'Components/CountrySelector',
-    component: CountrySelector,
     parameters: {
         layout: 'padded',
     },
-    globals: {
-        // 👇 Set background value for all component stories
-        backgrounds: { value: 'gray', grid: false },
-    },
-} satisfies Meta<typeof CountrySelector>;
+} satisfies Meta;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj;
 
-export const Dialcode: Story = {
-    args: {
-        type: 'dialCode',
-    },
-};
-
+/**
+ * Nationality 模式 - 用於選擇國籍
+ */
 export const Nationality: Story = {
-    args: {
-        type: 'nationality',
+    render: function NationalityStory() {
+        const [value, setValue] = useState('TW');
+
+        return (
+            <CountrySelector.Root
+                type="nationality"
+                value={value}
+                onChange={(country) => setValue(country?.shortName || '')}
+                required
+            >
+                <CountrySelector.Trigger />
+                <CountrySelector.Dropdown />
+            </CountrySelector.Root>
+        );
     },
 };
 
-// 與手機號碼輸入框組合使用（模擬真實表單場景）
-export const WithPhoneNumber: Story = {
-    args: {
-        type: 'dialCode',
-        label: '',
-        name: 'countryCode',
-        required: true,
+/**
+ * DialCode 模式 - 用於選擇國家電話區號
+ */
+export const DialCode: Story = {
+    render: function DialCodeStory() {
+        const [dialCode, setDialCode] = useState('886');
+
+        return (
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'stretch' }}>
+                <CountrySelector.Root
+                    type="dialCode"
+                    value={dialCode}
+                    onChange={(country) => setDialCode(country?.code || '')}
+                >
+                    <CountrySelector.Trigger />
+                    <CountrySelector.Dropdown />
+                </CountrySelector.Root>
+            </div>
+        );
     },
-    render: (args) => (
-        <div className="input-wrapper">
-            <CountrySelector {...args} defaultValue="501" />
-            <input
-                type="tel"
-                id="phone-number"
-                name="phoneNumber"
-                placeholder="請輸入號碼"
-                className="phone-number"
-                required
-            />
-        </div>
-    ),
 };
