@@ -1,0 +1,30 @@
+/* ================================
+ * CountrySelector - 統一樣式導出
+ * ================================ */
+
+// 1. 導入共用變數和 mixins
+@import './variables';
+@import './mixins';
+
+// 2. 重置元件內部的瀏覽器預設樣式
+.country-selector {
+    // 重置所有元素
+    *,
+    *::before,
+    *::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    // 字體設定
+    font-family: $font-primary;
+    font-size: $text-normal;
+    font-weight: $font-weight-regular;
+    color: $color-gray-900;
+}
+
+// 3. 導入組件樣式
+@import './Root.scss';
+@import './Trigger.scss';
+@import './Dropdown.scss';

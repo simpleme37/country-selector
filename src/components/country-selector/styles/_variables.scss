@@ -1,0 +1,42 @@
+/* ================================
+ * 共用變數
+ * ================================ */
+
+// 字體
+$font-primary: 'Noto Sans TC', sans-serif;
+$font-weight-regular: 400;
+
+// 字體大小
+$text-large: 16px;
+$text-normal: 14px;
+$text-small: 13px;
+
+// 顏色
+$color-red: #db0f00;
+$color-orange: #ff8000;
+$color-yellow: #fff9d6;
+$color-blue: #009ace;
+$color-light-green: #00aa00;
+$color-dark-green: #008e7f;
+$color-brown: #eae9dd;
+$color-gray-900: #2d2d2d;
+$color-gray-500: #8b8b8b;
+$color-gray-200: #dedede;
+$color-gray-100: #f1f1f1;
+$color-white: #ffffff;
+
+// 間距
+$spacing-xs: 4px;
+$spacing-sm: 8px;
+$spacing-md: 12px;
+$spacing-lg: 16px;
+
+// 圓角
+$border-radius-sm: 4px;
+$border-radius-md: 8px;
+
+// 陰影
+$box-shadow: rgba(0, 0, 0, 0.2) 0px 1px 4px;
+
+// Z-index
+$z-index-dropdown: 1000;

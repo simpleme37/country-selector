@@ -1,0 +1,39 @@
+/* ================================
+ * 共用 Mixins
+ * ================================ */
+@import './variables';
+
+// 捲軸樣式
+@mixin custom-scrollbar {
+    &::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: $color-gray-100;
+        border-radius: $border-radius-sm;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: $color-gray-500;
+        border-radius: $border-radius-sm;
+
+        &:hover {
+            background: $color-gray-900;
+        }
+    }
+}
+
+// Flex 中央對齊
+@mixin flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+// 處理文字過長的情況
+@mixin text-ellipsis {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

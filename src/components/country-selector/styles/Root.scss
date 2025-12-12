@@ -1,0 +1,26 @@
+/* ================================
+ * Root 組件樣式
+ * Root 是容器，負責定位和基本佈局
+ * ================================ */
+@import './variables';
+
+.country-selector {
+    position: relative;
+    width: 100%;
+
+    // 字體設定
+    font-family: $font-primary;
+    font-size: $text-normal;
+    font-weight: $font-weight-regular;
+    color: $color-gray-900;
+
+    /* ========== Disabled 狀態 ========== */
+    &--disabled {
+        opacity: 0.6;
+        pointer-events: none;
+    }
+
+    &--open {
+        // 當 Dropdown 打開時的樣式
+    }
+}

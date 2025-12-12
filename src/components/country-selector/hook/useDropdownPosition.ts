@@ -5,7 +5,7 @@ import { useState, useLayoutEffect } from 'react';
  * @param isOpen
  * @param containerRef
  */
-export function useDropdownPositon(
+export function useDropdownPosition(
     isOpen: boolean,
     containerRef: React.RefObject<HTMLDivElement | null>
 ) {
@@ -19,16 +19,20 @@ export function useDropdownPositon(
             const spaceBelow = viewportHeight - triggerRect.bottom;
             const spaceAbove = triggerRect.top;
 
-            // 預設 dropdown 高度 (search + hint + list)
-            const estimatedHeight = 300;
+            // Dropdown 的高度限制
+            const minHeight = 200; // 最小高度
+            const maxHeightLimit = 600; // 最大高度限制
+            const padding = 20; // 與視窗邊緣的間距
 
             // 判斷展開方向：下方空間足夠就往下，否則往上
-            if (spaceBelow >= estimatedHeight || spaceBelow >= spaceAbove) {
+            if (spaceBelow >= maxHeightLimit || spaceBelow >= spaceAbove) {
                 setPosition('bottom');
-                setMaxHeight(Math.max(200, spaceBelow - 20)); // 留 20px 邊距
+                // 計算可用高度，但不超過最大高度限制
+                setMaxHeight(Math.min(maxHeightLimit, Math.max(minHeight, spaceBelow - padding)));
             } else {
                 setPosition('top');
-                setMaxHeight(Math.max(200, spaceAbove - 20));
+                // 計算可用高度，但不超過最大高度限制
+                setMaxHeight(Math.min(maxHeightLimit, Math.max(minHeight, spaceAbove - padding)));
             }
         }
     }, [isOpen, containerRef]);

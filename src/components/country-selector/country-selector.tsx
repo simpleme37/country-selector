@@ -4,14 +4,14 @@ import countriesData from '../../data/countries.zhTW.full.json';
 import CountryListItem from './CountryListItem';
 import type { Country, CountrySelectorProps } from './types/country-selector';
 import type { CountriesData } from './types/country-selector';
-import { useDropdownPositon } from './hook/useDropdownPosition';
+import { useDropdownPosition } from './hook/useDropdownPosition';
 import { filterAndGroupCountries } from './utils/countryUtils';
 import {
     MagnifyingGlassIcon,
     InfoCircleIcon,
     CrossCircleReverseIcon,
 } from '@lion-libs/react-icons';
-import './country-selector.scss';
+import './styles/index.scss';
 
 /**
  * 國家選擇器元件
@@ -41,7 +41,7 @@ export default function CountrySelector({
     const containerRef = useRef<HTMLDivElement>(null); // 用於偵測點擊外部
     const selectedItemRef = useRef<HTMLLIElement>(null); // 用於捲動至選中項目
 
-    const { position: dropdownPosition, maxHeight: dropdownMaxHeight } = useDropdownPositon(
+    const { position: dropdownPosition, maxHeight: dropdownMaxHeight } = useDropdownPosition(
         isDropdownOpen,
         containerRef
     );
