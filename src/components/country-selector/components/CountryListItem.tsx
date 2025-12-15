@@ -30,24 +30,14 @@ export default function CountryListItem({
             })}
             onClick={onClick}
         >
-            {type === 'dialCode' ? (
-                // 電話國碼模式
-                <>
-                    <div className="country-selector__list-item-name">
-                        {highlightMatch(country.zhName, searchInput)}{' '}
-                        {highlightMatch(country.enName, searchInput)} (
-                        {highlightMatch(country.shortName, searchInput)})
-                    </div>
-                    <span className="country-selector__list-item-code">
-                        +{highlightMatch(country.code, searchInput)}
-                    </span>
-                </>
-            ) : (
-                // 國籍模式
-                <span className="country-selector__list-item-name">
-                    {highlightMatch(country.zhName, searchInput)}{' '}
-                    {highlightMatch(country.enName, searchInput)} (
-                    {highlightMatch(country.shortName, searchInput)})
+            <div className="country-selector__list-item-name">
+                {highlightMatch(country.zhName, searchInput)}{' '}
+                {highlightMatch(country.enName, searchInput)} (
+                {highlightMatch(country.shortName, searchInput)})
+            </div>
+            {type === 'dialCode' && (
+                <span className="country-selector__list-item-code">
+                    +{highlightMatch(country.code, searchInput)}
                 </span>
             )}
         </li>

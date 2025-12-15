@@ -87,7 +87,7 @@ function App() {
             <div className="demo-group">
                 <h3>4. 外部資料與 loading 控制</h3>
                 <CountrySelector.Root
-                    type="dialCode"
+                    type="nationality"
                     value={customValue4}
                     onChange={(country) => setCustomValue4(country?.code || '')}
                     dataSource={customCountries}
