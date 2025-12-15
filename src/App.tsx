@@ -7,7 +7,8 @@ import './App.css';
 function App() {
     const [dialCode, setDialCode] = useState('886');
     const [nationality, setNationality] = useState('TW');
-    const [customValue, setCustomValue] = useState('');
+    const [customValue3, setCustomValue3] = useState('');
+    const [customValue4, setCustomValue4] = useState('');
 
     // 模擬外部API載入
     const [customCountries, setCustomCountries] = useState<CountryList>({ hotList: [], list: [] });
@@ -72,8 +73,8 @@ function App() {
                 <div className="input-wrapper">
                     <CountrySelector.Root
                         type="dialCode"
-                        value={customValue}
-                        onChange={(country) => setCustomValue(country?.code || '')}
+                        value={customValue3}
+                        onChange={(country) => setCustomValue3(country?.code || '')}
                     >
                         <CountrySelector.Trigger placeholder="國碼" />
                         <CountrySelector.Dropdown />
@@ -87,8 +88,8 @@ function App() {
                 <h3>4. 外部資料與 loading 控制</h3>
                 <CountrySelector.Root
                     type="dialCode"
-                    value={customValue}
-                    onChange={(country) => setCustomValue(country?.code || '')}
+                    value={customValue4}
+                    onChange={(country) => setCustomValue4(country?.code || '')}
                     dataSource={customCountries}
                     loading={customLoading}
                 >
