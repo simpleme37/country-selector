@@ -286,7 +286,7 @@ interface CountrySelectorProps {
 ```tsx
 <div className="phone-input-group">
     <CountrySelector type="dialCode" />
-    <input type="tel" placeholder="請輸入號碼" />
+    <input type="tel" placeholder="電話號碼" />
 </div>
 ```
 
@@ -295,5 +295,30 @@ interface CountrySelectorProps {
 .phone-input-group .country-selector__dropdown {
     width: calc((100% + 8px) * 4 - 8px); /* 根據 flex 比例調整 */
     max-width: none;
+}
+```
+
+### 範例 4：外部資料與 loading 控制
+
+模擬從 API 取得國家資料，並用 loading 控制 skeleton：
+
+```tsx
+function App() {
+    const [data, setData] = useState({ hotList: [], list: [] });
+    const [loading, setLoading] = useState(true);
+    useEffect(() => {
+        setTimeout(() => {
+            setData({
+                hotList: [
+                    /* ... */
+                ],
+                list: [
+                    /* ... */
+                ],
+            });
+            setLoading(false);
+        }, 1500);
+    }, []);
+    return <CountrySelector type="dialCode" dataSource={data} loading={loading} />;
 }
 ```

@@ -81,6 +81,9 @@ export interface CountrySelectorProps {
 
     /** 是否禁用 */
     disabled?: boolean;
+
+    /** 資料來源 */
+    dataSource?: CountryList[];
 }
 
 // ==========================================

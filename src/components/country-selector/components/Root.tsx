@@ -19,7 +19,9 @@ export interface RootProps {
     name?: string;
     required?: boolean;
     disabled?: boolean;
+    loading?: boolean;
     className?: string;
+    dataSource?: CountryList; // 自訂國家資料來源
     children: React.ReactNode; // 必須包含 Trigger 和 Dropdown
 }
 
@@ -35,7 +37,9 @@ export function Root({
     name,
     required = false,
     disabled = false,
+    loading,
     className,
+    dataSource,
     children,
 }: RootProps) {
     // ==========================================
@@ -43,6 +47,7 @@ export function Root({
     // ==========================================
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [searchInput, setSearchInput] = useState('');
+    const [internalLoading, setInternalLoading] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
     const containerRef = useRef<HTMLDivElement>(null);
@@ -57,12 +62,14 @@ export function Root({
     // 資料處理
     // ==========================================
     const { hotList, normalList } = useMemo(() => {
-        const data = countriesData as CountriesData;
+        // 如果外面有給 dataSource 的情況
+        const source = dataSource ?? (countriesData as CountriesData).mobileCodeList;
+
         return {
-            hotList: data.mobileCodeList.hotList,
-            normalList: data.mobileCodeList.list,
+            hotList: source.hotList,
+            normalList: source.list,
         };
-    }, []);
+    }, [dataSource]);
 
     const allCountriesCombined = useMemo(() => {
         return [...hotList, ...normalList];
@@ -145,19 +152,25 @@ export function Root({
     // ==========================================
     // Effects
     // ==========================================
-
     // 模擬搜尋 loading 狀態（用 setTimeout 模擬 API 延遲）
     useEffect(() => {
-        if (searchInput.trim()) {
-            setIsLoading(true);
-            const timer = setTimeout(() => {
-                setIsLoading(false);
-            }, 500);
-            return () => clearTimeout(timer);
-        } else {
-            setIsLoading(false);
+        if (loading === undefined) {
+            if (searchInput.trim()) {
+                setInternalLoading(true);
+                const timer = setTimeout(() => {
+                    setInternalLoading(false);
+                }, 500);
+                return () => clearTimeout(timer);
+            } else {
+                setInternalLoading(false);
+            }
         }
-    }, [searchInput]);
+    }, [searchInput, loading]);
+
+    // 合併外部與內部 loading 狀態
+    useEffect(() => {
+        setIsLoading(loading ?? internalLoading);
+    }, [loading, internalLoading, loading]);
 
     // 選單打開時，捲動至選中項目
     useEffect(() => {
