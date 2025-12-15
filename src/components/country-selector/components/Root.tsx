@@ -1,7 +1,6 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import countriesData from '../../../data/countries.zhTW.full.json';
-import type { Country } from '../types/country-selector';
-import type { CountriesData } from '../types/country-selector';
+import type { CountryList, Country, CountriesData } from '../types/country-selector';
 import { useDropdownPosition } from '../hook/useDropdownPosition';
 import { filterAndGroupCountries } from '../utils/countryUtils';
 import { CountrySelectorContext } from '../context/CountrySelectorContext';
@@ -170,7 +169,7 @@ export function Root({
     // 合併外部與內部 loading 狀態
     useEffect(() => {
         setIsLoading(loading ?? internalLoading);
-    }, [loading, internalLoading, loading]);
+    }, [internalLoading, loading]);
 
     // 選單打開時，捲動至選中項目
     useEffect(() => {
