@@ -69,75 +69,42 @@ function App() {
 
 ---
 
-## Props API
-
-### type
-
-- **類型**: `'dialCode' | 'nationality'`
-- **必填**: 是
-- **說明**: 選擇器模式
-
-### value
-
-- **類型**: `string`
-- **必填**: 否
-- **說明**: 受控模式，當前選中的值
-
-### defaultValue
-
-- **類型**: `string`
-- **必填**: 否
-- **說明**: 非受控模式，預設選中的值
-
-### onChange
-
-- **類型**: `(country: Country | null) => void`
-- **必填**: 否
-- **說明**: 選擇變更時的回調函數
-
-### placeholder
-
-- **類型**: `string`
-- **必填**: 否
-- **說明**: 按鈕 placeholder（未選中時顯示）
-
-### searchPlaceholder
-
-- **類型**: `string`
-- **必填**: 否
-- **預設值**: 依 type 自動設定
-- **說明**: 搜尋框 placeholder
-
-### hintText
-
-- **類型**: `string`
-- **必填**: 否
-- **預設值**: dialCode 模式有預設提示
-- **說明**: 下拉選單上方的提示文字
-
-### label
-
-- **類型**: `string`
-- **必填**: 否
-- **說明**: 表單標籤
-
-### disabled
-
-- **類型**: `boolean`
-- **必填**: 否
-- **預設值**: `false`
-- **說明**: 是否禁用元件
-
-### className
-
-- **類型**: `string`
-- **必填**: 否
-- **預設值**: `''`
-- **說明**: 自訂 CSS class
-
 ---
 
-## 功能說明
+## Props API
+
+### Root Props
+
+| Prop         | 類型                               | 必填 | 預設值 | 說明                      |
+| ------------ | ---------------------------------- | ---- | ------ | ------------------------- |
+| type         | 'dialCode' \| 'nationality'        | 是   |        | 選擇器模式                |
+| value        | string                             | 否   |        | 受控模式，當前選中的值    |
+| defaultValue | string                             | 否   |        | 非受控模式，預設選中的值  |
+| onChange     | (country: Country \| null) => void | 否   |        | 選擇變更時的回調函數      |
+| label        | string                             | 否   |        | 表單標籤                  |
+| name         | string                             | 否   |        | input name                |
+| required     | boolean                            | 否   | false  | 是否必填                  |
+| disabled     | boolean                            | 否   | false  | 是否禁用元件              |
+| loading      | boolean                            | 否   |        | 外部 loading 狀態         |
+| dataSource   | CountryList                        | 否   |        | 外部資料來源              |
+| className    | string                             | 否   |        | 自訂 CSS class            |
+| children     | ReactNode                          | 是   |        | 必須包含 Trigger/Dropdown |
+
+### Trigger Props
+
+| Prop        | 類型      | 必填 | 說明                             |
+| ----------- | --------- | ---- | -------------------------------- |
+| children    | ReactNode | 否   | 可選：自訂的 input 或 button     |
+| className   | string    | 否   | 自訂 CSS class                   |
+| placeholder | string    | 否   | 按鈕 placeholder（未選中時顯示） |
+
+### Dropdown Props
+
+| Prop              | 類型   | 必填 | 說明                   |
+| ----------------- | ------ | ---- | ---------------------- |
+| className         | string | 否   | 自訂 CSS class         |
+| hint              | string | 否   | 下拉選單上方的提示文字 |
+| searchPlaceholder | string | 否   | 搜尋框 placeholder     |
 
 ### 1. 搜尋與過濾
 

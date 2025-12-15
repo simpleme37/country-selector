@@ -19,8 +19,8 @@ export interface RootProps {
     required?: boolean;
     disabled?: boolean;
     loading?: boolean;
-    className?: string;
     dataSource?: CountryList; // 自訂國家資料來源
+    className?: string;
     children: React.ReactNode; // 必須包含 Trigger 和 Dropdown
 }
 
@@ -37,8 +37,8 @@ export function Root({
     required = false,
     disabled = false,
     loading,
-    className,
     dataSource,
+    className,
     children,
 }: RootProps) {
     // ==========================================
