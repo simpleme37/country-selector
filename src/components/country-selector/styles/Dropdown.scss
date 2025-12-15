@@ -2,18 +2,18 @@
  * Dropdown 組件樣式
  * 包含：容器、搜尋框、提示、列表、項目
  * ================================ */
-@import './variables';
-@import './mixins';
+@use './variables' as v;
+@use './mixins' as m;
 
 /* ========== Dropdown 容器 ========== */
 .country-selector__dropdown {
     position: absolute;
-    z-index: $z-index-dropdown;
+    z-index: v.$z-index-dropdown;
     width: 100%;
-    padding: $spacing-sm;
-    background-color: $color-white;
-    border-radius: $border-radius-sm;
-    box-shadow: $box-shadow;
+    padding: v.$spacing-sm;
+    background-color: v.$color-white;
+    border-radius: v.$border-radius-sm;
+    box-shadow: v.$box-shadow;
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -32,10 +32,10 @@
 .country-selector__hint {
     display: flex;
     align-items: center;
-    gap: $spacing-xs;
-    padding: $spacing-xs $spacing-sm $spacing-sm $spacing-sm;
-    font-size: $text-small;
-    color: $color-gray-500;
+    gap: v.$spacing-xs;
+    padding: v.$spacing-xs v.$spacing-sm v.$spacing-sm v.$spacing-sm;
+    font-size: v.$text-small;
+    color: v.$color-gray-500;
 
     svg {
         flex-shrink: 0;
@@ -45,24 +45,24 @@
 /* ========== 搜尋框 ========== */
 .country-selector__search {
     position: relative;
-    margin-bottom: $spacing-sm;
+    margin-bottom: v.$spacing-sm;
 }
 
 .country-selector__search-input {
     width: 100%;
-    padding: $spacing-sm;
-    border: 1px solid $color-gray-200;
-    border-radius: $border-radius-sm;
-    font-size: $text-normal;
+    padding: v.$spacing-sm;
+    border: 1px solid v.$color-gray-200;
+    border-radius: v.$border-radius-sm;
+    font-size: v.$text-normal;
     outline: none;
     transition: border-color 0.2s;
 
     &:focus {
-        border-color: $color-gray-500;
+        border-color: v.$color-gray-500;
     }
 
     &::placeholder {
-        color: $color-gray-500;
+        color: v.$color-gray-500;
     }
 }
 
@@ -70,15 +70,15 @@
 .search-icon,
 .clear-icon {
     position: absolute;
-    right: $spacing-sm;
+    right: v.$spacing-sm;
     top: 50%;
     transform: translateY(-50%);
-    color: $color-gray-500;
+    color: v.$color-gray-500;
     cursor: pointer;
     transition: color 0.2s;
 
     &:hover {
-        color: $color-gray-900;
+        color: v.$color-gray-900;
     }
 }
 
@@ -91,8 +91,8 @@
     overflow-y: auto;
     flex: 1;
     min-height: 0;
-    padding-right: $spacing-sm;
-    @include custom-scrollbar;
+    padding-right: v.$spacing-sm;
+    @include m.custom-scrollbar;
 
     /* Loading 狀態 */
     &.country-selector--loading {
@@ -103,9 +103,9 @@
 /* 列表、字母小標題 */
 .country-selector__list-title,
 .country-selector__list-letter {
-    font-size: $text-small;
-    color: $color-gray-500;
-    padding: $spacing-xs $spacing-sm;
+    font-size: v.$text-small;
+    color: v.$color-gray-500;
+    padding: v.$spacing-xs v.$spacing-sm;
 }
 
 /* ========== 列表項目 ========== */
@@ -113,35 +113,35 @@
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
-    gap: $spacing-xs;
-    padding: $spacing-sm;
-    border-radius: $border-radius-md;
+    gap: v.$spacing-xs;
+    padding: v.$spacing-sm;
+    border-radius: v.$border-radius-md;
     cursor: pointer;
     transition: background-color 0.2s;
-    font-size: $text-normal;
+    font-size: v.$text-normal;
 
     /* Hover 狀態 */
     &:hover:not(&--loading):not(&--empty) {
-        background-color: $color-gray-100;
+        background-color: v.$color-gray-100;
     }
 
     /* 選中狀態 */
     &--selected {
-        background-color: $color-gray-100;
+        background-color: v.$color-gray-100;
     }
 
     /* 無搜尋結果 */
     &--empty {
-        @include flex-center;
-        color: $color-blue;
+        @include m.flex-center;
+        color: v.$color-blue;
         cursor: default;
     }
 
     /* Loading 狀態 */
     &--loading {
-        @include flex-center;
-        gap: $spacing-sm;
-        color: $color-gray-500;
+        @include m.flex-center;
+        gap: v.$spacing-sm;
+        color: v.$color-gray-500;
         cursor: default;
     }
 
@@ -156,9 +156,9 @@
 .skeleton {
     background: linear-gradient(
         90deg,
-        $color-gray-100 25%,
-        $color-gray-200 50%,
-        $color-gray-100 75%
+        v.$color-gray-100 25%,
+        v.$color-gray-200 50%,
+        v.$color-gray-100 75%
     );
     background-size: 200% 100%;
     animation: shimmer 1.5s infinite;
@@ -196,28 +196,12 @@
 
 /* 項目內容 (國碼) */
 .country-selector__list-item-code {
-    color: $color-gray-500;
+    color: v.$color-gray-500;
     flex-shrink: 0;
-}
-
-/* Loading 動畫 */
-.country-selector__loading-spinner {
-    font-size: 18px;
-    display: inline-block;
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    0% {
-        transform: rotate(0deg);
-    }
-    100% {
-        transform: rotate(360deg);
-    }
 }
 
 /* ========== 搜尋 Highlight ========== */
 mark {
     background-color: transparent;
-    color: $color-red;
+    color: v.$color-red;
 }

@@ -1,7 +1,7 @@
 /* ================================
  * 共用 Mixins
  * ================================ */
-@import './variables';
+@use './variables' as v;
 
 // 捲軸樣式
 @mixin custom-scrollbar {
@@ -10,16 +10,16 @@
     }
 
     &::-webkit-scrollbar-track {
-        background: $color-gray-100;
-        border-radius: $border-radius-sm;
+        background: v.$color-gray-100;
+        border-radius: v.$border-radius-sm;
     }
 
     &::-webkit-scrollbar-thumb {
-        background: $color-gray-500;
-        border-radius: $border-radius-sm;
+        background: v.$color-gray-500;
+        border-radius: v.$border-radius-sm;
 
         &:hover {
-            background: $color-gray-900;
+            background: v.$color-gray-900;
         }
     }
 }
